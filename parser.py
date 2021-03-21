@@ -61,17 +61,26 @@ class Parser:
             #print("checking ", url)
         _thread.start_new_thread(self.write, (url,) )
         self.browser_lock.acquire()
-        webbrowser.open_new(url)
-        self.browser_lock.release()
+        try:
+            webbrowser.open_new(url)
+        except:
+            print("Cannot open browser")
+        finally:
+            self.browser_lock.release()
     
     def write(self, url):
         self.mutex.acquire()
-        file = open("found.txt", "a+")
-        file.write(url + "\n")
-        file.write(datetime.now().strftime("%H:%M:%S") + "\n")
-        file.close()
-        self.mutex.release()
-        print("written stock info to file")
+        try:
+            file = open("found.txt", "a+")
+            file.write(url + "\n")
+            file.write(datetime.now().strftime("%H:%M:%S") + "\n")
+            file.close()
+            print("written stock info to file")
+        except:
+            print("Cannot write to file")
+        finally:
+            self.mutex.release()
+        
         
     def clear(self):
         while 1:
